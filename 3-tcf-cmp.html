@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>3. TCF cookie tool</title><link rel="stylesheet" href="style.css"><script src="diag.js"></script>
+<script>
+// Minimal TCF v2 cookie tool: answers __tcfapi like Cookiebot / OneTrust do.
+(function () {
+  var listeners = [];
+  var PURPOSES = { all: { 1: true, 2: true, 3: true, 4: true, 8: true, 9: true }, analytics: { 1: true, 8: true, 9: true }, marketing: { 1: true, 2: true, 3: true, 4: true }, none: {} };
+  function saved() { try { return localStorage.getItem('host-consent'); } catch (e) { return null; } }
+  function tcData(status) { var s = saved(); return { tcfPolicyVersion: 2, gdprApplies: true, eventStatus: status || (s ? 'tcloaded' : 'cmpuishown'), purpose: { consents: s ? PURPOSES[s] : {} } }; }
+  window.__tcfapi = function (cmd, version, cb) {
+    if (cmd === 'getTCData') { cb(tcData(), true); diagLog('host', 'Form script asked the TCF tool: getTCData (saved choice: ' + (saved() || 'none') + ')'); }
+    else if (cmd === 'addEventListener') { listeners.push(cb); cb(tcData(), true); }
+    else if (cmd === 'ping') cb({ gdprApplies: true, cmpLoaded: true }, true);
+  };
+  window.tcfChoose = function (key, label) {
+    try { localStorage.setItem('host-consent', key); } catch (e) {}
+    document.getElementById('host-banner').hidden = true;
+    diagLog('host', 'Website TCF tool: visitor clicked "' + label + '" → useractioncomplete');
+    listeners.forEach(function (l) { l(tcData('useractioncomplete'), true); });
+  };
+  document.addEventListener('DOMContentLoaded', function () { if (!saved()) document.getElementById('host-banner').hidden = false; });
+})();
+</script></head>
+<body>
+<div class="host-banner" id="host-banner" hidden><strong>Example Events Co. — cookie settings (TCF).</strong> Your choice here should also apply to the registration form below.<br><br>
+<button type="button" onclick="tcfChoose('all', this.textContent)">Accept all</button><button type="button" onclick="tcfChoose('none', this.textContent)">Reject all</button><button type="button" onclick="tcfChoose('analytics', this.textContent)">Analytics only</button><button type="button" onclick="tcfChoose('marketing', this.textContent)">Marketing only</button></div>
+<header class="site"><a href="index.html">← All test pages</a><h1>Example Events Co.</h1><p>Page 3: the website uses a TCF cookie tool (window.__tcfapi). Choose in the website banner, then reload the page to see the second-visit case.</p></header>
+<main><h2>Register for our event</h2>
+<a class="contactless-registration-widget" href="https://app.staging.micetribe.com/register/workspaces/32weq33/events/int261sb33454/forms/map-mail-qa-17715">Register</a>
+<script crossorigin="anonymous" src="https://app.staging.micetribe.com/form.min.js"></script>
+</main></body></html>
