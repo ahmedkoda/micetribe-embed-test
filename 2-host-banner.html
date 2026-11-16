@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2. Website banner</title><link rel="stylesheet" href="style.css"><script src="diag.js"></script></head>
+<body>
+<div class="host-banner" id="host-banner" hidden><strong>Example Events Co. uses cookies.</strong> Your choice here should also apply to the registration form below.<br><br>
+<button type="button" data-a="1" data-m="1">Accept all</button><button type="button" data-a="0" data-m="0">Reject all</button><button type="button" data-a="1" data-m="0">Analytics only</button><button type="button" data-a="0" data-m="1">Marketing only</button></div>
+<header class="site"><a href="index.html">← All test pages</a><h1>Example Events Co.</h1><p>Page 2: the website has its own cookie banner and passes the choice with MicetribeConsent.set().</p></header>
+<main><h2>Register for our event</h2>
+<a class="contactless-registration-widget" href="https://app.staging.micetribe.com/register/workspaces/32weq33/events/int261sb33454/forms/map-mail-qa-17715">Register</a>
+<script crossorigin="anonymous" src="https://app.staging.micetribe.com/form.min.js"></script>
+<script>
+(function () {
+  function send(choice, why) {
+    var tries = 0;
+    (function attempt() {
+      if (window.MicetribeConsent) {
+        window.MicetribeConsent.set(choice);
+        diagLog('host', 'Website → MicetribeConsent.set(' + JSON.stringify(choice) + ') — ' + why);
+      } else if (tries++ < 50) setTimeout(attempt, 100);
+      else diagLog('error', 'MicetribeConsent never became available');
+    })();
+  }
+  var stored = null;
+  try { stored = JSON.parse(localStorage.getItem('host-consent')); } catch (e) {}
+  var banner = document.getElementById('host-banner');
+  if (stored) send(stored, 'saved choice from an earlier visit');
+  else banner.hidden = false;
+  banner.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    var choice = { analytics: b.dataset.a === '1', marketing: b.dataset.m === '1' };
+    try { localStorage.setItem('host-consent', JSON.stringify(choice)); } catch (err) {}
+    banner.hidden = true;
+    send(choice, 'clicked "' + b.textContent + '"');
+  });
+})();
+</script>
+</main></body></html>
