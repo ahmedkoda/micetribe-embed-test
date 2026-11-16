@@ -1,0 +1,11 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>MICEtribe embed test</title><link rel="stylesheet" href="style.css"></head>
+<body><header class="site"><h1>MICEtribe embed test site</h1><p>Test pages for MP-4895 (cookie consent in the embedded registration form). Each page embeds the STAGING form with the standard embed code.</p></header>
+<main>
+<p class="note">Open each page in a new private / incognito window to start as a new visitor. The dark panel at the bottom right shows the consent messages and any error on the page.</p>
+<div class="cards">
+<a href="1-plain-embed.html"><strong>1. Plain embed (no cookie banner on the website)</strong><br>Expected: the form shows its own cookie banner.</a>
+<a href="2-host-banner.html"><strong>2. Website banner that passes the choice (MicetribeConsent.set)</strong><br>Expected: after you choose in the website banner, the form shows no banner of its own.</a>
+<a href="3-tcf-cmp.html"><strong>3. Website with a TCF cookie tool (__tcfapi)</strong><br>Expected: the form uses the website's choice; no error in the panel, also on the second visit.</a>
+</div>
+<p>Form used: <code>https://app.staging.micetribe.com/register/workspaces/32weq33/events/int261sb33454/forms/map-mail-qa-17715</code></p>
+</main></body></html>
